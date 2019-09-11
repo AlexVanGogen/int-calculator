@@ -1,5 +1,6 @@
 package edu.ifmo.intexpr
 
+import edu.ifmo.intexpr.error.LocatedRecognitionException
 import edu.ifmo.intexpr.eval.ExpressionEvaluator
 
 object Cli {
@@ -11,7 +12,12 @@ object Cli {
             print("$PROMPT ")
             val expressionString = readLine() ?: continue
             if (expressionString == EXIT_MESSAGE) break
-            println(ExpressionEvaluator.eval(expressionString))
+            try {
+                println(ExpressionEvaluator.eval(expressionString))
+            } catch (e: LocatedRecognitionException) {
+                println(" ".repeat(PROMPT.length + e.charPositionInLine) + "^")
+                println(e.message)
+            }
         }
     }
 }
