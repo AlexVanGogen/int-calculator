@@ -11,6 +11,23 @@ repositories {
 
 apply plugin: 'antlr'
 
+configurations {
+    compile {
+        extendsFrom = extendsFrom.findAll { it != configurations.antlr }
+    }
+}
+
+generateGrammarSource {
+    maxHeapSize = "64m"
+    arguments += ["-package", "edu.ifmo.intexpr.parser", "-visitor", "-long-messages"]
+}
+compileJava.dependsOn generateGrammarSource
+compileKotlin.dependsOn generateGrammarSource
+
+sourceSets {
+    main.java.srcDirs += "${project.buildDir}/generated-src/antlr/main"
+}
+
 test {
     useJUnitPlatform()
 }
