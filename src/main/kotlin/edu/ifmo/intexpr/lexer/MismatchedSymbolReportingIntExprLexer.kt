@@ -9,7 +9,7 @@ class MismatchedSymbolReportingIntExprLexer(input: CharStream) : IntExprLexer(in
     override fun emit(token: Token) {
         when (token.type) {
             MismatchedSymbol -> throw LocatedRecognitionException(
-                token.charPositionInLine + 1,
+                token.charPositionInLine,
                 "invalid symbol '${token.text}'"
             )
         }
