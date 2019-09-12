@@ -8,10 +8,10 @@ import org.antlr.v4.runtime.CommonTokenStream
 
 object ExpressionEvaluator {
 
-    fun eval(expression: String): Int {
+    fun eval(expression: String, context: EvaluationContext<Int> = EvaluationContext.of()): Int? {
         val lexer = MismatchedSymbolReportingIntExprLexer(CharStreams.fromString(expression))
         val parser = IntExprParser(CommonTokenStream(lexer))
         parser.errorHandler = ParsingErrorStrategy()
-        return parser.line().accept(EvaluationVisitor())
+        return parser.line().accept(EvaluationVisitor(context))
     }
 }

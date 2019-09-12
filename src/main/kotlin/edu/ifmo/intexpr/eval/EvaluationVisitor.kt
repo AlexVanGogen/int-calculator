@@ -1,10 +1,18 @@
 package edu.ifmo.intexpr.eval
 
+import edu.ifmo.intexpr.error.UndefinedVariableException
 import edu.ifmo.intexpr.parser.IntExprBaseVisitor
 import edu.ifmo.intexpr.parser.IntExprParser.*
 import kotlin.RuntimeException
 
-class EvaluationVisitor : IntExprBaseVisitor<Int>() {
+class EvaluationVisitor(private val context: EvaluationContext<Int>) : IntExprBaseVisitor<Int?>() {
+
+    override fun visitLetStatement(ctx: LetStatementContext): Int? {
+        val variableValue = visitExpression(ctx.expression())
+        val variableName = ctx.Identifier().text
+        context.save(variableName to variableValue)
+        return null
+    }
 
     override fun visitParenthesizedExpression(ctx: ParenthesizedExpressionContext): Int {
         return visitExpression(ctx.nestedExpression)
@@ -29,6 +37,16 @@ class EvaluationVisitor : IntExprBaseVisitor<Int>() {
             MINUS -> leftOperandValue - rightOperandValue
             else -> throw RuntimeException()
         }
+    }
+
+    override fun visitIdentifierExpression(ctx: IdentifierExpressionContext): Int {
+        val variable = ctx.Identifier()
+        val variableName = variable.text
+        return context.getValue(variableName) ?: throw UndefinedVariableException(
+            variableName,
+            variable.symbol.startIndex,
+            variable.symbol.stopIndex
+        )
     }
 
     override fun visitLiteralExpression(ctx: LiteralExpressionContext): Int {
