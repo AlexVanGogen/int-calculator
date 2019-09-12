@@ -1,5 +1,6 @@
 package edu.ifmo.intexpr.eval
 
+import edu.ifmo.intexpr.error.DivisionByZeroException
 import edu.ifmo.intexpr.error.UndefinedVariableException
 import edu.ifmo.intexpr.parser.IntExprBaseVisitor
 import edu.ifmo.intexpr.parser.IntExprParser.*
@@ -19,8 +20,12 @@ class EvaluationVisitor(private val context: EvaluationContext<Int>) : IntExprBa
     }
 
     override fun visitMultiplicativeExpression(ctx: MultiplicativeExpressionContext): Int {
-        val leftOperandValue = visitExpression(ctx.left)
         val rightOperandValue = visitExpression(ctx.right)
+        if (ctx.operator.type in arrayOf(DIV, MOD)) {
+            if (rightOperandValue == 0)
+                throw DivisionByZeroException(ctx.right.start.startIndex, ctx.right.stop.stopIndex)
+        }
+        val leftOperandValue = visitExpression(ctx.left)
         return when (ctx.operator.type) {
             MUL -> leftOperandValue * rightOperandValue
             DIV -> leftOperandValue / rightOperandValue

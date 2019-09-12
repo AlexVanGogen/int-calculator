@@ -27,3 +27,14 @@ class LocatedRecognitionException(
         .appendln("Syntax error at position ${max(charPositionInLine, 0)}: $message")
         .toString()
 )
+
+class DivisionByZeroException(
+    val expressionStartOffset: Int,
+    val expressionEndOffset: Int
+) : ExceptionWithErrorLocation(
+    StringBuilder()
+        .append(" ".repeat(expressionStartOffset))
+        .appendln("^".repeat(expressionEndOffset - expressionStartOffset + 1))
+        .appendln("Error: division by zero")
+        .toString()
+)
