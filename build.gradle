@@ -10,6 +10,10 @@ repositories {
 }
 
 apply plugin: 'antlr'
+apply plugin: 'application'
+apply plugin: 'distribution'
+
+mainClassName = 'edu.ifmo.intexpr.CliKt'
 
 configurations {
     compile {
