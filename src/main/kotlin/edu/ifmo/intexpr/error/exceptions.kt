@@ -38,3 +38,15 @@ class DivisionByZeroException(
         .appendln("Error: division by zero")
         .toString()
 )
+
+class NotAnIntegerException(
+    val value: String,
+    val numberStartOffset: Int,
+    val numberEndOffset: Int
+) : ExceptionWithErrorLocation(
+    StringBuilder()
+        .append(" ".repeat(numberStartOffset))
+        .appendln("^".repeat(numberEndOffset - numberStartOffset + 1))
+        .appendln("Error: $value is not a 32-bit integer")
+        .toString()
+)

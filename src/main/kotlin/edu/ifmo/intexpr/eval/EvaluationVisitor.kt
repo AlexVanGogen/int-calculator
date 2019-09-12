@@ -1,6 +1,7 @@
 package edu.ifmo.intexpr.eval
 
 import edu.ifmo.intexpr.error.DivisionByZeroException
+import edu.ifmo.intexpr.error.NotAnIntegerException
 import edu.ifmo.intexpr.error.UndefinedVariableException
 import edu.ifmo.intexpr.parser.IntExprBaseVisitor
 import edu.ifmo.intexpr.parser.IntExprParser.*
@@ -55,10 +56,19 @@ class EvaluationVisitor(private val context: EvaluationContext<Int>) : IntExprBa
     }
 
     override fun visitLiteralExpression(ctx: LiteralExpressionContext): Int {
-        return ctx.text.toInt()
+        return ctx.text.toIntOrNull() ?: throw NotAnIntegerException(
+            ctx.text,
+            ctx.start.startIndex,
+            ctx.stop.stopIndex
+        )
     }
 
     override fun visitUnaryExpression(ctx: UnaryExpressionContext): Int {
+        if (ctx.operator.type == MINUS
+            && ctx.nestedExpression is LiteralExpressionContext
+            && "-" + ctx.nestedExpression.text == Int.MIN_VALUE.toString()) {
+            return Int.MIN_VALUE
+        }
         val operandValue = visitExpression(ctx.nestedExpression)
         return when (ctx.operator.type) {
             PLUS -> operandValue
